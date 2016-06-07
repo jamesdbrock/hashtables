@@ -306,11 +306,11 @@ testMutate prefix dummyArg = testProperty (prefix ++ "/mutate") $
       Monad.mapM_ (testOne ht) testList
 
 
-    upd n v = (fmap (+ n) v <|> pure n, ())
+    upd n v = return (fmap (+ n) v <|> pure n, ())
 
     testOne ht (k, values) = do
         pre . not . null $ values
-        run $ mutate ht k (const (Nothing, ()))
+        run $ mutate ht k (const $ return (Nothing, ()))
         out1 <- run $ lookup ht k
         assertEq ("mutate deletes " ++ show k) Nothing out1
         out2 <- run $ do

@@ -305,7 +305,7 @@ insert htRef !k !v = do
 mutate :: (Eq k, Hashable k) =>
           (HashTable s k v)
        -> k
-       -> (Maybe v -> (Maybe v, a))
+       -> (Maybe v -> ST s (Maybe v, a))
        -> ST s a
 mutate htRef !k !f = do
     ht <- readRef htRef
@@ -317,7 +317,7 @@ mutate htRef !k !f = do
     !mv <- if found
               then fmap Just $ readArray values b1
               else return Nothing
-    let (!mv', !result) = f mv
+    (!mv', !result) <- f mv
     case (mv, mv') of
         (Nothing, Nothing) -> return ()
         (Just _, Nothing)  -> do

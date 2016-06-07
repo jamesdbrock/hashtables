@@ -58,7 +58,7 @@ module Data.HashTable.IO
 
 
 ------------------------------------------------------------------------------
-import           Control.Monad.Primitive       (PrimState)
+import           Control.Monad.Primitive       (PrimState, primToST)
 import           Control.Monad.ST              (stToIO)
 import           Data.Hashable                 (Hashable)
 import qualified Data.HashTable.Class          as C
@@ -155,15 +155,15 @@ lookup h k = stToIO $ C.lookup h k
 ------------------------------------------------------------------------------
 -- | See the documentation for this function in "Data.HashTable.Class#v:mutate".
 mutate   :: (C.HashTable h, Eq k, Hashable k) =>
-            IOHashTable h k v -> k -> (Maybe v -> (Maybe v, a)) -> IO a
-mutate h k f = stToIO $ C.mutate h k f
+            IOHashTable h k v -> k -> (Maybe v -> IO (Maybe v, a)) -> IO a
+mutate h k f = stToIO $ C.mutate h k (primToST . f)
 {-# INLINE mutate #-}
 {-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k) =>
-                         BasicHashTable  k v -> k -> (Maybe v -> (Maybe v, a)) -> IO a #-}
+                         BasicHashTable  k v -> k -> (Maybe v -> IO (Maybe v, a)) -> IO a #-}
 {-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k) =>
-                         LinearHashTable k v -> k -> (Maybe v -> (Maybe v, a)) -> IO a #-}
+                         LinearHashTable k v -> k -> (Maybe v -> IO (Maybe v, a)) -> IO a #-}
 {-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k) =>
-                         CuckooHashTable k v -> k -> (Maybe v -> (Maybe v, a)) -> IO a #-}
+                         CuckooHashTable k v -> k -> (Maybe v -> IO (Maybe v, a)) -> IO a #-}
 
 
 ------------------------------------------------------------------------------

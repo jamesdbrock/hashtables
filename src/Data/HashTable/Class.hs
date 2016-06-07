@@ -70,7 +70,7 @@ class HashTable h where
     --
     -- Returns the second part of the tuple returned by /f/.
     mutate :: (Eq k, Hashable k) =>
-              h s k v -> k -> (Maybe v -> (Maybe v, a)) -> ST s a
+              h s k v -> k -> (Maybe v -> ST s (Maybe v, a)) -> ST s a
 
     -- | Inserts a key/value mapping into a hash table, replacing any existing
     -- mapping for that key.
