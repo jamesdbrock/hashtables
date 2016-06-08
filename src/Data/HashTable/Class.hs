@@ -68,8 +68,11 @@ class HashTable h where
     -- from the hash table. Otherwise the mapping for /k/ is inserted or
     -- replaced with the provided value.
     --
+    -- Typeclass 'Eq' is required so that the mutation can no-op if it is
+    -- instructed to insert a value which already exists for the given key.
+    --
     -- Returns the second part of the tuple returned by /f/.
-    mutate :: (Eq k, Hashable k) =>
+    mutate :: (Eq k, Hashable k, Eq v) =>
               h s k v -> k -> (Maybe v -> ST s (Maybe v, a)) -> ST s a
 
     -- | Inserts a key/value mapping into a hash table, replacing any existing

@@ -258,7 +258,7 @@ lookup' (HashTable sz _ hashes keys values _) !k = do
 ------------------------------------------------------------------------------
 -- | See the documentation for this function in
 -- "Data.HashTable.Class#v:alter".
-mutate :: (Eq k, Hashable k) =>
+mutate :: (Eq k, Hashable k, Eq v) =>
           HashTable s k v
        -> k
        -> (Maybe v -> ST s (Maybe v, a))

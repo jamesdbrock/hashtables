@@ -302,7 +302,7 @@ insert htRef !k !v = do
 ------------------------------------------------------------------------------
 -- | See the documentation for this function in
 -- "Data.HashTable.Class#v:alter".
-mutate :: (Eq k, Hashable k) =>
+mutate :: (Eq k, Hashable k, Eq v) =>
           (HashTable s k v)
        -> k
        -> (Maybe v -> ST s (Maybe v, a))
@@ -326,10 +326,11 @@ mutate htRef !k !f = do
             insertIntoSlot ht b0 he k v'
             ht' <- checkOverflow ht
             writeRef htRef ht'
-        (Just _, Just v')  -> do
-            when (b0 /= b1) $
-                deleteFromSlot ht b1
-            insertIntoSlot ht b0 he k v'
+        (Just v1, Just v2)  -> do
+            when (v1 /= v2) $ do
+                when (b0 /= b1) $
+                    deleteFromSlot ht b1
+                insertIntoSlot ht b0 he k v2
     return result
   where
     !h     = hash k

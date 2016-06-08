@@ -154,15 +154,15 @@ lookup h k = stToIO $ C.lookup h k
 
 ------------------------------------------------------------------------------
 -- | See the documentation for this function in "Data.HashTable.Class#v:mutate".
-mutate   :: (C.HashTable h, Eq k, Hashable k) =>
+mutate   :: (C.HashTable h, Eq k, Hashable k, Eq v) =>
             IOHashTable h k v -> k -> (Maybe v -> IO (Maybe v, a)) -> IO a
 mutate h k f = stToIO $ C.mutate h k (primToST . f)
 {-# INLINE mutate #-}
-{-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k) =>
+{-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k, Eq v) =>
                          BasicHashTable  k v -> k -> (Maybe v -> IO (Maybe v, a)) -> IO a #-}
-{-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k) =>
+{-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k, Eq v) =>
                          LinearHashTable k v -> k -> (Maybe v -> IO (Maybe v, a)) -> IO a #-}
-{-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k) =>
+{-# SPECIALIZE INLINE mutate :: (Eq k, Hashable k, Eq v) =>
                          CuckooHashTable k v -> k -> (Maybe v -> IO (Maybe v, a)) -> IO a #-}
 
 

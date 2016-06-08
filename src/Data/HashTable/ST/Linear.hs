@@ -221,7 +221,7 @@ insert htRef k v = do
 ------------------------------------------------------------------------------
 -- | See the documentation for this function in
 -- "Data.HashTable.Class#v:alter".
-mutate :: (Eq k, Hashable k) =>
+mutate :: (Eq k, Hashable k, Eq v) =>
           HashTable s k v
        -> k
        -> (Maybe v -> ST s (Maybe v, a))
