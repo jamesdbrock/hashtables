@@ -128,7 +128,7 @@ instance C.HashTable HashTable where
     foldM           = foldM
     mapM_           = mapM_
     computeOverhead = computeOverhead
-    mutate          = error "unimplemented"
+    mutate          = mutate
 
 
 ------------------------------------------------------------------------------
@@ -218,7 +218,28 @@ insert htRef k v = do
             return ht
 {-# INLINE insert #-}
 
-
+------------------------------------------------------------------------------
+-- | See the documentation for this function in
+-- "Data.HashTable.Class#v:alter".
+mutate :: (Eq k, Hashable k) =>
+          HashTable s k v
+       -> k
+       -> (Maybe v -> ST s (Maybe v, a))
+       -> ST s a
+mutate htRef !k !f = do
+    mv <- lookup htRef k
+    (mv', result) <- f mv
+    case (mv, mv') of
+        (Nothing, Nothing) -> return ()
+        (Just _, Nothing) -> delete htRef k
+        (Nothing, Just v') -> insert htRef k v'
+        (Just _, Just v') -> do
+            -- if we had an (instance Eq v) then we could check to see if the
+            -- new value is the same as the old and then no-op.
+            delete htRef k
+            insert htRef k v'
+    return result
+{-# INLINE mutate #-}
 
 ------------------------------------------------------------------------------
 -- | See the documentation for this function in
